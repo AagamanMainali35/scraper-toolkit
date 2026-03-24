@@ -42,20 +42,32 @@ def get_book_details(book_url):
 
 def scrape():
     url = base_url
-    rq = session.get(url)
-    bs = BeautifulSoup(rq.content, "lxml")
 
-    for article in bs.find_all("article", class_="product_pod"):
-        relative_url = article.h3.a["href"]
+    while url:
+        rq = session.get(url)
+        bs = BeautifulSoup(rq.content, "lxml")
 
-        if relative_url.startswith("catalogue/"):
-            book_url = f"{base_url}{relative_url}"
+        for article in bs.find_all("article", class_="product_pod"):
+            relative_url = article.h3.a["href"]
+
+            if relative_url.startswith("catalogue/"):
+                book_url = f"{base_url}{relative_url}"
+            else:
+                book_url = f"{base_url}catalogue/{relative_url}"
+
+            details = get_book_details(book_url)
+            details["url"] = book_url
+            book_data.append(details)
+
+        next_btn = bs.find("li", class_="next")
+        if next_btn:
+            href = next_btn.a["href"]
+            if href.startswith("catalogue/"):
+                url = f"{base_url}{href}"
+            else:
+                url = f"{base_url}catalogue/{href}"
         else:
-            book_url = f"{base_url}catalogue/{relative_url}"
-
-        details = get_book_details(book_url)
-        details["url"] = book_url
-        book_data.append(details)
+            url = None
 
 scrape()
 print(len(book_data))
