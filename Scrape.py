@@ -23,6 +23,21 @@ def get_book_details(book_url):
         else:
             data["description"] = ""
 
+        table = bs.find("table", class_="table-striped")
+        if table:
+            for row in table.find_all("tr"):
+                key = row.th.text.strip()
+                value = row.td.text.strip()
+
+                if key == "UPC":
+                    data["upc"] = value
+                elif key == "Price (incl. tax)":
+                    data["price"] = value
+                elif key == "Tax":
+                    data["tax"] = value
+                elif key == "Availability":
+                    data["availability"] = value
+
     return data
 
 def scrape():
