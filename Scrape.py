@@ -2,10 +2,11 @@ from bs4 import BeautifulSoup
 import requests
 import time
 from datetime import datetime
+import json
 
 base_url = "https://books.toscrape.com/"
-session = requests.Session()
 book_data = []
+session = requests.Session()
 
 def get_book_details(book_url):
     rq = session.get(book_url)
@@ -30,7 +31,6 @@ def get_book_details(book_url):
             for row in table.find_all("tr"):
                 key = row.th.text.strip()
                 value = row.td.text.strip()
-
                 if key == "UPC":
                     data["upc"] = value
                 elif key == "Price (incl. tax)":
@@ -78,3 +78,6 @@ end = time.perf_counter()
 
 print(f"Total books: {len(book_data)}")
 print(f"Time taken: {end - start:.2f} seconds")
+
+with open("Books.json", "w", encoding="utf-8") as file:
+    json.dump(book_data, file, indent=4, ensure_ascii=False)
