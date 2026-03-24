@@ -15,9 +15,15 @@ def get_book_details(book_url):
     if product_div:
         data["name"] = product_div.h1.text.strip()
 
+        desc = bs.find("div", id="product_description")
+        if desc:
+            p = desc.find_next_sibling("p")
+            if p:
+                data["description"] = p.text.strip()
+        else:
+            data["description"] = ""
+
     return data
-
-
 
 def scrape():
     url = base_url
@@ -35,3 +41,6 @@ def scrape():
         details = get_book_details(book_url)
         details["url"] = book_url
         book_data.append(details)
+
+scrape()
+print(len(book_data))
