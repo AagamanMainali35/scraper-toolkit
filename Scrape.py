@@ -1,5 +1,7 @@
 from bs4 import BeautifulSoup
 import requests
+import time
+from datetime import datetime
 
 base_url = "https://books.toscrape.com/"
 session = requests.Session()
@@ -57,6 +59,7 @@ def scrape():
 
             details = get_book_details(book_url)
             details["url"] = book_url
+            details["scrape_date"] = datetime.now().strftime("%Y-%m-%d")
             book_data.append(details)
 
         next_btn = bs.find("li", class_="next")
@@ -69,5 +72,9 @@ def scrape():
         else:
             url = None
 
+start = time.perf_counter()
 scrape()
-print(len(book_data))
+end = time.perf_counter()
+
+print(f"Total books: {len(book_data)}")
+print(f"Time taken: {end - start:.2f} seconds")
