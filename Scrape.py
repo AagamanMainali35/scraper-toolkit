@@ -3,6 +3,7 @@ import requests
 
 base_url = "https://books.toscrape.com/"
 session = requests.Session()
+book_data = []
 
 def get_book_details(book_url):
     rq = session.get(book_url)
@@ -15,6 +16,8 @@ def get_book_details(book_url):
         data["name"] = product_div.h1.text.strip()
 
     return data
+
+
 
 def scrape():
     url = base_url
@@ -29,4 +32,6 @@ def scrape():
         else:
             book_url = f"{base_url}catalogue/{relative_url}"
 
-        print(book_url)
+        details = get_book_details(book_url)
+        details["url"] = book_url
+        book_data.append(details)
